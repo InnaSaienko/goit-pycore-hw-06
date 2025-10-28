@@ -13,5 +13,5 @@ class Name(Field):
 
 @dataclass
 class Phone(Field):
-    phone: str
+    value: str
 
