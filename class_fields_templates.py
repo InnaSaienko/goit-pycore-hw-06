@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from validation_phone import validation_phone
 
 
 @dataclass
@@ -15,3 +16,5 @@ class Name(Field):
 class Phone(Field):
     value: str
 
+    def __post_init__(self):
+        self.value = validation_phone(self.value)
