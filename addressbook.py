@@ -1,6 +1,6 @@
 from collections import UserDict
 from typing import Optional
-from record_class import Record
+from records import Record
 
 
 class AddressBook(UserDict):

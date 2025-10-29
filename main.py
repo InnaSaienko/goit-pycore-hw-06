@@ -1,6 +1,6 @@
-from addressbook_class import AddressBook
-from record_class import Record
-from class_fields_templates import Name, Phone
+from addressbook import AddressBook
+from records import Record
+from fields_type import Name, Phone
 
 
 def main():

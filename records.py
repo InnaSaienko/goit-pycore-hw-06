@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from class_fields_templates import Name, Phone
+from fields_type import Name, Phone
 
 
 @dataclass
