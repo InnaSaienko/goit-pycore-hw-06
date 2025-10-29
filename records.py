@@ -1,16 +1,20 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
-
-from fields_type import Name, Phone
+from fields_type import Name, Phone, Birthday
 
 
 @dataclass
 class Record:
     name: Name
+    birthday: Birthday
     phones: List[Phone] = field(default_factory=list)
 
     def add_phone(self, phone: str) -> None:
         self.phones.append(Phone(phone))
+
+    def add_birthday(self, birthday):
+        self.birthday = birthday
+        return True
 
     def find_phone(self, phone: str) -> Optional[Phone]:
         phone_generator = (p for p in self.phones if p.value == phone)

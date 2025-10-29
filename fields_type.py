@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from validation_phone import validation_phone
+from datetime import datetime
+from utils.validation_phone import validation_phone
 
 
 @dataclass
@@ -18,3 +19,16 @@ class Phone(Field):
 
     def __post_init__(self):
         self.value = validation_phone(self.value)
+
+
+class Birthday(Field):
+    value: datetime
+    def __init__(self, value: str):
+        try:
+            self.value = datetime.strptime(value, "%d.%m.%Y")
+        except ValueError:
+            raise ValueError("Invalid date format. Use DD.MM.YYYY")
+
+    def __str__(self):
+        return self.value.strftime("%Y.%m.%d")
+

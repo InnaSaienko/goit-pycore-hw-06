@@ -1,6 +1,7 @@
 from collections import UserDict
 from typing import Optional
 from records import Record
+from utils.get_upcoming_birthdays import get_birthdays
 
 
 class AddressBook(UserDict):
@@ -18,3 +19,6 @@ class AddressBook(UserDict):
             return True
         else:
             return False
+
+    def get_upcoming_birthdays(self):
+        return get_birthdays(self.data)
