@@ -1,37 +1,51 @@
 from addressbook import AddressBook
-from records import Record
-from fields_type import Name, Phone, Birthday
+from handlers import handle_exit, handle_welcome, handle_add, handle_change_contact, handle_show_phone, \
+    handle_show_all_contacts, parse_input
+
+COMMAND_TO_HANDLER = {
+    "add": handle_add,
+    "change": handle_change_contact,
+    "phone": handle_show_phone,
+    "all": handle_show_all_contacts,
+    # "add-birthday": handle_add_birthday,
+    # "show-birthday": handle_show_birthday,
+    # "birthday": handle_birthday,
+    "hello": handle_welcome,
+    "close": handle_exit,
+    "exit": handle_exit,
+}
+
+
+def read_input():
+    user_input = None
+    try:
+        while user_input is None:
+            user_input = input("Enter a command: ")
+        command, args = parse_input(user_input)
+    except EOFError:
+        command, args = "exit", []
+    return command, args
+
+
+def process_command(command, args, book: AddressBook):
+    try:
+        handler = COMMAND_TO_HANDLER[command]
+    except KeyError:
+        print("Invalid command.")
+    else:
+        return handler(args, book)
 
 
 def main():
     book = AddressBook()
-
-    john_record = Record(Name("John"), Birthday("01.01.1990"))
-    john_record.add_phone("1234567890")
-    john_record.add_phone("5555555555")
-    # john_record.add_birthday("01.01.1990")
-    book.add_record(john_record)
-
-    jane_record = Record(Name("Jane"), Birthday("02.11.1992"))
-    jane_record.add_phone("9876543210")
-    # jane_record.add_birthday("02.11.1992")
-    book.add_record(jane_record)
-
-    # Show all records
-    print("All contacts:")
-    for name, record in book.data.items():
-        print(record)
-
-    john = book.find("John")
-    john.edit_phone("1234567890", "1112223333")
-
-    upcoming_birthdays = book.get_upcoming_birthdays()
-    print(f"\nUpcoming birthdays: {upcoming_birthdays}")
-
-    found_phone = john.find_phone("5555555555")
-    print(f"{john.name}: {found_phone}")
-
-    book.delete("Jane")
+    print("Welcome to the assistant bot!")
+    while True:
+        try:
+            command, args = read_input()
+            process_command(command, args, book)
+        except StopIteration:
+            break
+    print(f"Goodbye!")
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ from fields_type import Name, Phone, Birthday
 @dataclass
 class Record:
     name: Name
-    birthday: Birthday
+    birthday: Optional[Birthday] = None
     phones: List[Phone] = field(default_factory=list)
 
     def add_phone(self, phone: str) -> None:
