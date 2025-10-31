@@ -3,7 +3,7 @@ import re
 def validation_phone(phone: str) -> str | ValueError:
     formatted_phone_number = re.sub(r"[^\d+]", "", phone)
 
-    if len(formatted_phone_number) != 10:
+    if len(formatted_phone_number) < 10:
         raise ValueError(f"Invalid phone number '{phone}'. Must be 10 digits.")
 
     if len(formatted_phone_number) != 0 and formatted_phone_number[0] != "+":
