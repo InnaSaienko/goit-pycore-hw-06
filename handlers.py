@@ -9,8 +9,8 @@ def input_error(func):
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except ValueError:
-            print("Give me name and phone please.")
+        except ValueError as e:
+            print(e)
         except KeyError:
             print("Invalid name.")
         except IndexError:
@@ -18,26 +18,20 @@ def input_error(func):
 
     return inner
 
-
 def parse_input(user_input):
     parts = user_input.split()
     cmd, *args = parts
     cmd = cmd.lower()
     return cmd, args
 
-
-
-
 @input_error
-def add_contact(args, book: AddressBook):
-    name, phone = args
+def get_contact(name, book: AddressBook):
     return book.data.get(name)
-
 
 @input_error
 def handle_add(args, book: AddressBook):
-    record = add_contact(args, book)
     name, phone = args
+    record = get_contact(name, book)
     message = "Contact updated."
     if record is None:
         record = Record(Name(name))
@@ -48,7 +42,6 @@ def handle_add(args, book: AddressBook):
         record.add_phone(phone)
     print(message)
 
-
 @input_error
 def change_contact(args, book: AddressBook):
     name, phone = args
@@ -57,25 +50,21 @@ def change_contact(args, book: AddressBook):
         return True
     return False
 
-
 @input_error
 def handle_change_contact(args, contacts):
     msg = "Contact updated." if change_contact(args, contacts) else "Contact not found."
     print(msg)
 
-
 @input_error
-def show_phone(args, contacts):
+def show_phone(args, book):
     name = args[0]
-    return contacts.get(name)
-
+    return book.get(name)
 
 @input_error
-def handle_show_phone(args, contacts):
-    phone = show_phone(args, contacts)
+def handle_show_phone(args, book):
+    phone = show_phone(args, book)
     msg = phone if phone else "Contact not found."
     print(msg)
-
 
 @input_error
 def show_all(_args, book: AddressBook):
@@ -83,13 +72,23 @@ def show_all(_args, book: AddressBook):
         return None
     return "\n".join(str(record) for record in book.data.values())
 
-
 @input_error
 def handle_show_all_contacts(_args, book: AddressBook):
     result = show_all(_args, book)
     if result is None:
         result = "No contacts found."
     print(result)
+
+@input_error
+def handle_add_birthday(args, book: AddressBook):
+    name, date = args
+    record = get_contact(name, book)
+    message = "Contact updated."
+    if record is None:
+        message = "Can't update, the contact doesn't exist."
+    else:
+        record.add_birthday(date)
+    print(message)
 
 
 def handle_welcome(_args, _contacts):

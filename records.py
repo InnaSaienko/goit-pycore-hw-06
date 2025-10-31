@@ -9,6 +9,10 @@ class Record:
     birthday: Optional[Birthday] = None
     phones: List[Phone] = field(default_factory=list)
 
+    def __str__(self):
+        phone_str = '; '.join(p.value for p in self.phones)
+        return f"Contact name: {self.name.value}, birthday: {self.birthday}, phones: {phone_str}"
+
     def add_phone(self, phone: str) -> None:
         self.phones.append(Phone(phone))
 
@@ -34,6 +38,3 @@ class Record:
                 return True
         return False
 
-    def __str__(self):
-        phone_str = '; '.join(p.value for p in self.phones)
-        return f"Contact name: {self.name.value}, phones: {phone_str}"
