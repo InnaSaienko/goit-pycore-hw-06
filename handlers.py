@@ -107,12 +107,13 @@ def handle_add_birthday(args, book: AddressBook):
 
 
 @input_error
-def handle_show_birthday(self, name, book: AddressBook):
+def handle_show_birthday(args, book: AddressBook):
+    name, *rest = args
     record = book.data.get(name)
-    if record in None:
+    if record is None:
         return MESSAGES["contact_not_found"]
     else:
-        return record.birthday.value
+        return record.birthday
 
 
 def handle_welcome(_args, _contacts):

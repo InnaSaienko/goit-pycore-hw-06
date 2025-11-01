@@ -1,6 +1,5 @@
 from addressbook import AddressBook
-from handlers import handle_exit, handle_welcome, handle_add, handle_change_contact, handle_show_phone, \
-    handle_show_all_contacts, parse_input, handle_add_birthday
+from handlers import handle_exit, handle_welcome, handle_add, handle_change_contact, handle_show_phone, handle_show_all_contacts, parse_input, handle_add_birthday, handle_show_birthday
 
 COMMAND_TO_HANDLER = {
     "add": handle_add,
@@ -8,7 +7,7 @@ COMMAND_TO_HANDLER = {
     "phone": handle_show_phone,
     "all": handle_show_all_contacts,
     "add-birthday": handle_add_birthday,
-    # "show-birthday": handle_show_birthday,
+    "show-birthday": handle_show_birthday,
     # "birthday": handle_birthday,
     "hello": handle_welcome,
     "close": handle_exit,
@@ -42,7 +41,8 @@ def main():
     while True:
         try:
             command, args = read_input()
-            process_command(command, args, book)
+            result = process_command(command, args, book)
+            print(result)
         except StopIteration:
             break
     print(f"Goodbye!")
