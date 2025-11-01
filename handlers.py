@@ -1,7 +1,12 @@
+import json
 from functools import wraps
 from addressbook import AddressBook
 from records import Record
 from fields_type import Name
+from utils.validation_phone import validation_phone
+
+with open("messages.json", encoding="utf-8") as f:
+    MESSAGES = json.load(f)
 
 
 def input_error(func):
@@ -12,11 +17,12 @@ def input_error(func):
         except ValueError as e:
             print(e)
         except KeyError:
-            print("Invalid name.")
+            print(MESSAGES["invalid_name"])
         except IndexError:
-            print("A username is required.")
+            print(MESSAGES["invalid_args"])
 
     return inner
+
 
 def parse_input(user_input):
     parts = user_input.split()
@@ -24,47 +30,55 @@ def parse_input(user_input):
     cmd = cmd.lower()
     return cmd, args
 
-@input_error
-def get_contact(name, book: AddressBook):
-    return book.data.get(name)
 
 @input_error
 def handle_add(args, book: AddressBook):
     name, phone = args
-    record = get_contact(name, book)
-    message = "Contact updated."
+    record = book.data.get(name)
     if record is None:
         record = Record(Name(name))
         record.add_phone(phone)
         book.add_record(record)
-        message = "Contact added."
+        return MESSAGES["contact_added"]
     else:
         record.add_phone(phone)
-    print(message)
+    return MESSAGES["change_success"]
+
 
 @input_error
 def change_contact(args, book: AddressBook):
-    name, phone = args
-    if name in book:
-        book[name] = phone
-        return True
+    name, old_phone, new_phone = args
+    record = book.data.get(name)
+    old_phone = validation_phone(old_phone)
+    new_phone = validation_phone(new_phone)
+
+    if record:
+        for phone in record.phones:
+            if phone.value == old_phone:
+                phone.value = new_phone
+                return True
+            return False
     return False
 
+
 @input_error
-def handle_change_contact(args, contacts):
-    msg = "Contact updated." if change_contact(args, contacts) else "Contact not found."
-    print(msg)
+def handle_change_contact(args, book):
+    msg = MESSAGES["change_success"] if change_contact(args, book) else MESSAGES["contact_not_found"]
+    return msg
+
 
 @input_error
 def show_phone(args, book):
     name = args[0]
     return book.get(name)
 
+
 @input_error
 def handle_show_phone(args, book):
     phone = show_phone(args, book)
-    msg = phone if phone else "Contact not found."
-    print(msg)
+    result = phone if phone else MESSAGES["contact_not_found"]
+    return result
+
 
 @input_error
 def show_all(_args, book: AddressBook):
@@ -72,27 +86,38 @@ def show_all(_args, book: AddressBook):
         return None
     return "\n".join(str(record) for record in book.data.values())
 
+
 @input_error
 def handle_show_all_contacts(_args, book: AddressBook):
-    result = show_all(_args, book)
-    if result is None:
-        result = "No contacts found."
-    print(result)
+    address_book = show_all(_args, book)
+    result = MESSAGES["contact_list_empty"] if address_book is None else address_book
+    return result
+
 
 @input_error
 def handle_add_birthday(args, book: AddressBook):
     name, date = args
-    record = get_contact(name, book)
-    message = "Contact updated."
+    record = book.data.get(name)
     if record is None:
-        message = "Can't update, the contact doesn't exist."
+        return MESSAGES["birthday_contact_missing"]
     else:
         record.add_birthday(date)
-    print(message)
+
+    return MESSAGES["change_success"]
+
+
+@input_error
+def handle_show_birthday(self, name, book: AddressBook):
+    record = book.data.get(name)
+    if record in None:
+        return MESSAGES["contact_not_found"]
+    else:
+        return record.birthday.value
 
 
 def handle_welcome(_args, _contacts):
-    print(f"How can I help you?")
+    return MESSAGES["welcome"]
+
 
 @input_error
 def handle_exit(_args, _contacts):
